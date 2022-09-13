@@ -2,7 +2,7 @@ from sound_audio import sound_audio as sa
 from times import times
 from google import google
 from youtube import youtube
-from wikipedia import wikipedia 
+from search_wikipedia import wikipedia 
 from software import software
 from gmail import email
 from weather import weather
