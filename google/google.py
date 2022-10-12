@@ -19,8 +19,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 from time import strftime
 from gtts import gTTS
 from youtube_search import YoutubeSearch
+from selenium.webdriver.chrome.options import Options
+
 wikipedia.set_lang('vi')
 language = 'vi'
+
+path = ChromeDriverManager().install()
 
 from sound_audio import sound_audio as sa
 
@@ -28,9 +32,12 @@ from sound_audio import sound_audio as sa
 def open_google_and_search(text):
     search_for = text.split("kiếm", 1)[1]
     sa.speak('Okay!')
-    driver = webdriver.Chrome(path)
+    chrome_options = Options()
+    chrome_options.add_experimental_option("detach", True)
+    driver = webdriver.Chrome(path, chrome_options=chrome_options)
+    driver.maximize_window()
     driver.get("https://www.google.com")
-    que = driver.find_element_by_xpath("//input[@name='q']")
+    que = driver.find_element("xpath", "//input[@name='q']")
     que.send_keys(str(search_for))
     que.send_keys(Keys.RETURN)
     

@@ -19,17 +19,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 from time import strftime
 from gtts import gTTS
 from youtube_search import YoutubeSearch
-wikipedia.set_lang('vi')
-language = 'vi'
+import http.client as httplib
+from selenium.webdriver.chrome.options import Options
+import math
+
+path = ChromeDriverManager().install()
 
 from sound_audio import sound_audio as sa
 
-'''Tính năng Gửi email'''
-def send_email(text):
-    sa.speak('Bạn gửi email cho ai nhỉ?')
-    recipient = sa.get_text()
-    if len(recipient) > 0:
-        url = 'mailto:' + recipient
-        webbrowser.open(url)
-    else:
-        sa.speak('Bot không hiểu bạn muốn gửi email cho ai. Bạn nói lại được không?')
+
+
+    

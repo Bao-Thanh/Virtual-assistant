@@ -29,7 +29,7 @@ def assistant():
             elif "hiện tại" in text:
                 times.get_time(text)
             elif "mở" in text:
-                if 'mở google và tìm kiếm' in text:
+                if 'tìm kiếm' or 'tìm' or 'kiếm' in text:
                     google.open_google_and_search(text)
                 elif "." in text:
                     google.open_website(text)
@@ -48,6 +48,6 @@ def assistant():
             elif "định nghĩa" in text:
                 wikipedia.tell_me_about()
             else:
-                sa.speak("Bạn cần Bot giúp gì ạ?")
+                sa.speak("Bạn cần Bot giúp gì ạ?"  )
 
 assistant()

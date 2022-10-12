@@ -26,10 +26,10 @@ from sound_audio import sound_audio as sa
 
 '''Tính năng Mở ứng dụng'''
 def open_application(text):
-    if "google" in text:
-        sa.speak("Mở Google Chrome")
-        os.startfile(
-            'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe')
+    if "phần mềm" in text:
+        subtext = text[12: len(text)]
+        sa.speak("Mở phần mềm " + subtext)
+        os.startfile("C:\ProgramData\Microsoft\Windows\Start Menu\Programs\\" + subtext)
     elif "word" in text:
         sa.speak("Mở Microsoft Word")
         os.startfile(
