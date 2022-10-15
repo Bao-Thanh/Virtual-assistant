@@ -7,7 +7,7 @@ from software import software
 from gmail import email
 from weather import weather
 from bot import bot
-from news import news 
+# from news import news 
 
 def assistant():
     sa.speak("Xin chào, bạn tên là gì nhỉ?")
@@ -43,8 +43,8 @@ def assistant():
                 youtube.play_song()
             # elif "hình nền" in text:
             #     change_wallpaper()
-            elif "đọc báo" in text:
-                news.read_news()
+            #elif "đọc báo" in text:
+                # news.read_news()
             elif "định nghĩa" in text:
                 wikipedia.tell_me_about()
             else:

@@ -34,7 +34,7 @@ def tell_me_about():
         time.sleep(10)
         for content in contents[1:]:
             sa.speak("Bạn muốn nghe thêm không")
-            ans = get_text()
+            ans = sa.get_text()
             if "có" not in ans:
                 break    
             sa.speak(content)
