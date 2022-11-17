@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>563</width>
+    <height>799</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPlainTextEdit" name="plainTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>10</y>
+      <width>561</width>
+      <height>661</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>680</y>
+      <width>101</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Micro</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="plainTextEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>680</y>
+      <width>461</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>563</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>...</string>
+    </property>
+    <addaction name="actionSetting"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_Us"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menufeatures">
+    <property name="title">
+     <string>Features</string>
+    </property>
+    <widget class="QMenu" name="menuSecurity">
+     <property name="title">
+      <string>Security</string>
+     </property>
+     <addaction name="actionCheck_URL"/>
+     <addaction name="actionCheck_Password"/>
+    </widget>
+    <addaction name="actiontranslate"/>
+    <addaction name="actionCalculator"/>
+    <addaction name="actionLearn_English"/>
+    <addaction name="actionMath_Formulas"/>
+    <addaction name="menuSecurity"/>
+    <addaction name="actionLearn_More"/>
+   </widget>
+   <widget class="QMenu" name="menuhelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionGuide_2"/>
+    <addaction name="actionAbout_BOT"/>
+   </widget>
+   <widget class="QMenu" name="menuFeedback">
+    <property name="title">
+     <string>Feedback</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_V">
+    <property name="title">
+     <string>+V</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_V_2">
+    <property name="title">
+     <string>-V</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuCalender">
+    <property name="title">
+     <string>Calender</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuTime">
+    <property name="title">
+     <string>Time</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menufeatures"/>
+   <addaction name="menu_V"/>
+   <addaction name="menu_V_2"/>
+   <addaction name="menuCalender"/>
+   <addaction name="menuTime"/>
+   <addaction name="menuFeedback"/>
+   <addaction name="menuhelp"/>
+  </widget>
+  <action name="actionSetting">
+   <property name="text">
+    <string>Setting</string>
+   </property>
+  </action>
+  <action name="actionGuide">
+   <property name="text">
+    <string>Guide</string>
+   </property>
+  </action>
+  <action name="actionAbout_Us">
+   <property name="text">
+    <string>About us</string>
+   </property>
+  </action>
+  <action name="actionturn_up">
+   <property name="text">
+    <string>Turn up</string>
+   </property>
+  </action>
+  <action name="actionturn_down">
+   <property name="text">
+    <string>Turn down</string>
+   </property>
+  </action>
+  <action name="actionnow">
+   <property name="text">
+    <string>Now</string>
+   </property>
+  </action>
+  <action name="actionopen_calendar">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actiontime">
+   <property name="text">
+    <string>Time</string>
+   </property>
+  </action>
+  <action name="actiontranslate">
+   <property name="text">
+    <string>Translate</string>
+   </property>
+  </action>
+  <action name="actionCalculator">
+   <property name="text">
+    <string>Calculator</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionGuide_2">
+   <property name="text">
+    <string>How to use</string>
+   </property>
+  </action>
+  <action name="actionAbout_BOT">
+   <property name="text">
+    <string>About BOT</string>
+   </property>
+  </action>
+  <action name="actionLearn_English">
+   <property name="text">
+    <string>Learn English</string>
+   </property>
+  </action>
+  <action name="actionMath_Formulas">
+   <property name="text">
+    <string>Math Formulas</string>
+   </property>
+  </action>
+  <action name="actionLearn_More">
+   <property name="text">
+    <string>Learn More</string>
+   </property>
+  </action>
+  <action name="actionCheck_URL">
+   <property name="text">
+    <string>Check URL</string>
+   </property>
+  </action>
+  <action name="actionCheck_Password">
+   <property name="text">
+    <string>Check Password</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
