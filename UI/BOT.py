@@ -41,7 +41,7 @@ from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 import wikipedia
-
+import matplotlib.pyplot as plt
 from UrlFeaturizer import UrlFeaturizer
 wikipedia.set_lang('vi')
 language = 'vi'
@@ -55,9 +55,17 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model
 import pandas as pd
-
+import cv2
+import imutils
+        
 path = ChromeDriverManager().install()
 
+def word(password):
+    character=[]
+    for i in password:
+        character.append(i)
+    return character
+    
 class Ui_MainWindow(object):
     def nhom(self):
         self.window = QtWidgets.QMainWindow()
@@ -121,6 +129,71 @@ class Ui_MainWindow(object):
             predicted = np.argmax(model.predict(scaler.transform(test)),axis=1)
             self.plainTextEdit.insertPlainText(url + " là trang web " + encoder.inverse_transform(predicted)[0] + "\n")
             self.plainTextEdit.insertPlainText("______________________________\n")
+    def check_pass(self):
+        password = self.lineEdit.text()
+        if password == "":
+            self.speak('Hãy nhập password để kiểm tra')
+            self.lineEdit.setFocus()
+            self.plainTextEdit.insertPlainText("______________________________\n")
+        else:
+            model = pickle.load(open('models/RandomForestClassifier.pkl', 'rb'))
+            tf = pickle.load(open('models/tdif.pkl', 'rb'))
+            test = tf.transform([password]).toarray()
+            output = model.predict(test)
+            self.plainTextEdit.insertPlainText(str('Password: ' + password + ' có độ bảo mật ' + output) + '\n')
+            self.plainTextEdit.insertPlainText("______________________________\n")
+    def sort_contours(self, cnts, method="left-to-right"):
+        reverse = False
+        i = 0
+        if method == "right-to-left" or method == "bottom-to-top":
+            reverse = True
+        if method == "top-to-bottom" or method == "bottom-to-top":
+            i = 1
+        boundingBoxes = [cv2.boundingRect(c) for c in cnts]
+        (cnts, boundingBoxes) = zip(*sorted(zip(cnts, boundingBoxes),
+        key=lambda b:b[1][i], reverse=reverse))
+        # return the list of sorted contours and bounding boxes
+        return (cnts, boundingBoxes)
+    def get_letters(self, img):
+        letters = []
+        image = cv2.imread(img)
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        ret,thresh1 = cv2.threshold(gray ,127,255,cv2.THRESH_BINARY_INV)
+        dilated = cv2.dilate(thresh1, None, iterations=2)
+
+        cnts = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        cnts = imutils.grab_contours(cnts)
+        cnts = self.sort_contours(cnts, method="left-to-right")[0]
+        # loop over the contours
+        for c in cnts:
+            if cv2.contourArea(c) > 10:
+                (x, y, w, h) = cv2.boundingRect(c)
+                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            roi = gray[y:y + h, x:x + w]
+            thresh = cv2.threshold(roi, 0, 255,cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+            thresh = cv2.resize(thresh, (32, 32), interpolation = cv2.INTER_CUBIC)
+            thresh = thresh.astype("float32") / 255.0
+            thresh = np.expand_dims(thresh, axis=-1)
+            thresh = thresh.reshape(1,32,32,1)
+            model = load_model("models/Sequential.h5")
+            LB = pickle.load(open('models/lb.pkl', 'rb'))
+            ypred = model.predict(thresh)
+            ypred = LB.inverse_transform(ypred)
+            [x] = ypred
+            letters.append(x)
+        return letters, image
+
+    def get_word(self, letter):
+        word = "".join(letter)
+        return word
+
+    def image_to_text(self):
+        letter,image = self.get_letters("Test/TRAIN_00003.jpg")
+        word = self.get_word(letter)
+        self.plainTextEdit.insertPlainText(word + "\n")
+        self.plainTextEdit.insertPlainText("______________________________\n")
+        # print(word)
+        # plt.imshow(image)
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(563, 799)
@@ -215,13 +288,15 @@ class Ui_MainWindow(object):
         self.actionMath_Formulas.triggered.connect(self.math_formulas)
         self.menuSecurity = QtWidgets.QMenu(self.menufeatures)
         self.menuSecurity.setObjectName("menuSecurity")
-        self.actionLearn_More = QtWidgets.QAction(MainWindow)
-        self.actionLearn_More.setObjectName("actionLearn_More")
+        self.actionImg_toText = QtWidgets.QAction(MainWindow)
+        self.actionImg_toText.setObjectName("actionImg_toText")
+        self.actionImg_toText.triggered.connect(self.image_to_text)
         self.actionCheck_URL = QtWidgets.QAction(MainWindow)
         self.actionCheck_URL.setObjectName("actionCheck_URL")
         self.actionCheck_URL.triggered.connect(self.Check_URL)
         self.actionCheck_Password = QtWidgets.QAction(MainWindow)
         self.actionCheck_Password.setObjectName("actionCheck_Password")
+        self.actionCheck_Password.triggered.connect(self.check_pass)
         self.menu.addAction(self.actionSetting)
         self.menu.addSeparator()
         self.menu.addAction(self.actionAbout_Us)
@@ -234,7 +309,7 @@ class Ui_MainWindow(object):
         self.menufeatures.addAction(self.actionLearn_English)
         self.menufeatures.addAction(self.actionMath_Formulas)
         self.menufeatures.addAction(self.menuSecurity.menuAction())
-        self.menufeatures.addAction(self.actionLearn_More)
+        self.menufeatures.addAction(self.actionImg_toText)
         self.menuhelp.addAction(self.actionGuide)
         self.menuhelp.addAction(self.actionAbout_BOT)
         self.menubar.addAction(self.menu.menuAction())
@@ -277,7 +352,7 @@ class Ui_MainWindow(object):
         self.actionAbout_BOT.setText(_translate("MainWindow", "About BOT"))
         self.actionLearn_English.setText(_translate("MainWindow", "Learn English"))
         self.actionMath_Formulas.setText(_translate("MainWindow", "Math Formulas"))
-        self.actionLearn_More.setText(_translate("MainWindow", "Learn More"))
+        self.actionImg_toText.setText(_translate("MainWindow", "Image to Text"))
         self.actionCheck_URL.setText(_translate("MainWindow", "Check URL"))
         self.actionCheck_Password.setText(_translate("MainWindow", "Check Password"))
     

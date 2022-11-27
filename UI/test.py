@@ -1,11 +1,14 @@
-import webbrowser
-import re
+import pickle
+def word(password):
+    character=[]
+    for i in password:
+        character.append(i)
+    return character
 
-def open_website(text):
-    reg_ex = re.search('mở website (.+)', text)
-    if reg_ex:
-        domain = reg_ex.group(1)
-        url = 'https://www.' + domain + '.com'
-        webbrowser.open(url)
-
-open_website('mở website wikipedia')
+password ='abc'
+model = pickle.load(open('models/RandomForestClassifier.pkl', 'rb'))
+tf = pickle.load(open('models/tdif.pkl', 'rb'))
+test = tf.transform([password]).toarray()
+output = model.predict(test)
+result = str(password + ' có độ bảo mật ' + output)
+print(result)
