@@ -189,19 +189,20 @@ class Ui_MainWindow(object):
         return word
 
     def image_to_text(self):
-        imagePath, _ = QFileDialog.getOpenFileName()
+        imagePath, _ = QFileDialog.getOpenFileName(filter = "Image files (*.jpg *.gif *.png)")
         pixmap = QPixmap(imagePath)
         pixmap.save('Test\\test.png', "PNG")
         letter,image = self.get_letters("Test/test.png")
         word = self.get_word(letter)
         self.plainTextEdit.insertPlainText(word + "\n")
         self.plainTextEdit.insertPlainText("______________________________\n")
-        # print(word)
-        # plt.imshow(image)
+        print(word)
+        plt.imshow(image)
     def audio_book(self):
         import pyttsx3
         import PyPDF2
-        path, _ = QFileDialog.getOpenFileName()
+        path, _ = QFileDialog.getOpenFileName(filter = "PDF files (*.pdf)")
+        print(path)
         sach = open(path, 'rb')
         pdfReader = PyPDF2.PdfFileReader(sach)
         pages = pdfReader.numPages
@@ -632,7 +633,7 @@ class Ui_MainWindow(object):
                 time.sleep(1)
                 exit()
             else:
-                ai_brain = "Xin lỗi tôi không thể giúp được yêu cầu của bạn"
+                ai_brain = "Xin lỗi BOT không thể giúp được yêu cầu của bạn"
                 self.speak(ai_brain)
                 # notFound="<a href=\"http://www.google.com/search?q= " + you + "\">'Tìm kiếm " + you + "'</a>" 
                 # self.plainTextEdit.insertPlainText(notFound)
@@ -678,7 +679,7 @@ class Ui_MainWindow(object):
             time.sleep(1)
             exit()
         else:
-            ai_brain = "Xin lỗi tôi không thể giúp được yêu cầu của bạn"
+            ai_brain = "Xin lỗi BOT không thể giúp được yêu cầu của bạn"
             self.speak(ai_brain)
             # notFound="<a href=\"http://www.google.com/search?q= " + you + "\">'Tìm kiếm " + you + "'</a>" 
             # self.plainTextEdit.append(notFound)
