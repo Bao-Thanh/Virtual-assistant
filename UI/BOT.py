@@ -9,11 +9,9 @@
 
 import pickle
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QProcess, QTextCodec
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QApplication, QPlainTextEdit
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 import os
 from gtts import gTTS
@@ -74,7 +72,10 @@ class Ui_MainWindow(object):
         self.window.show()
     def feedback(self):
         url = 'mailto:19110019@student.hcmute.edu.vn?subject=Feedback'
-        webbrowser.open(url)   
+        webbrowser.open(url)
+    def about_bot(self):
+        url = 'https://github.com/Bao-Thanh/Virtual-assistant'
+        webbrowser.open(url)      
     def time(self):
         now = datetime.datetime.now()
         self.speak('Bây giờ là %d giờ %d phút %d giây ngày %d tháng %d năm %d' %
@@ -91,7 +92,7 @@ class Ui_MainWindow(object):
             translation = translator.translate(text)
             self.plainTextEdit.insertPlainText("You: " + text + "\n")
             self.speak(translation.text)
-            self.plainTextEdit.insertPlainText("_______________________________\n")
+            self.plainTextEdit.insertPlainText("______________________________\n")
             self.lineEdit.clear()
     def calendar(self):
         apps.open_app('Calendar')
@@ -188,12 +189,33 @@ class Ui_MainWindow(object):
         return word
 
     def image_to_text(self):
-        letter,image = self.get_letters("Test/TRAIN_00003.jpg")
+        imagePath, _ = QFileDialog.getOpenFileName()
+        pixmap = QPixmap(imagePath)
+        pixmap.save('Test\\test.png', "PNG")
+        letter,image = self.get_letters("Test/test.png")
         word = self.get_word(letter)
         self.plainTextEdit.insertPlainText(word + "\n")
         self.plainTextEdit.insertPlainText("______________________________\n")
         # print(word)
         # plt.imshow(image)
+    def audio_book(self):
+        import pyttsx3
+        import PyPDF2
+        path, _ = QFileDialog.getOpenFileName()
+        sach = open(path, 'rb')
+        pdfReader = PyPDF2.PdfFileReader(sach)
+        pages = pdfReader.numPages
+
+        bot = pyttsx3.init()
+        voices = bot.getProperty('voices')
+        bot.setProperty('voice', voices[1].id)
+
+        for num in range(8, pages):
+            page = pdfReader.getPage(num)
+            text = page.extractText()
+            print(text)
+            bot.say(text)
+            bot.runAndWait()
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(563, 799)
@@ -252,8 +274,6 @@ class Ui_MainWindow(object):
         self.actionSetting = QtWidgets.QAction(MainWindow)
         self.actionSetting.setObjectName("actionSetting")
         self.actionSetting.triggered.connect(self.setting)
-        self.actionGuide = QtWidgets.QAction(MainWindow)
-        self.actionGuide.setObjectName("actionGuide")
         self.actionAbout_Us = QtWidgets.QAction(MainWindow)
         self.actionAbout_Us.setObjectName("actionAbout_Us")
         self.actionAbout_Us.triggered.connect(self.nhom)
@@ -276,10 +296,9 @@ class Ui_MainWindow(object):
         self.actionExit = QtWidgets.QAction(MainWindow)
         self.actionExit.setObjectName("actionExit")
         self.actionExit.triggered.connect(QCoreApplication.instance().quit)
-        self.actionGuide = QtWidgets.QAction(MainWindow)
-        self.actionGuide.setObjectName("actionGuide")
-        self.actionAbout_BOT = QtWidgets.QAction(MainWindow)
-        self.actionAbout_BOT.setObjectName("actionAbout_BOT")
+        self.menuAbout_BOT = QtWidgets.QMenu(self.menubar)
+        self.menuAbout_BOT.setObjectName("menuAbout_BOT")
+        self.menuAbout_BOT.aboutToShow.connect(self.about_bot)
         self.actionLearn_English = QtWidgets.QAction(MainWindow)
         self.actionLearn_English.setObjectName("actionLearn_English")
         self.actionLearn_English.triggered.connect(self.learn_English)
@@ -291,6 +310,9 @@ class Ui_MainWindow(object):
         self.actionImg_toText = QtWidgets.QAction(MainWindow)
         self.actionImg_toText.setObjectName("actionImg_toText")
         self.actionImg_toText.triggered.connect(self.image_to_text)
+        self.actionAudio_Book = QtWidgets.QAction(MainWindow)
+        self.actionAudio_Book.setObjectName("actionAudio_Book")
+        self.actionAudio_Book.triggered.connect(self.audio_book)
         self.actionCheck_URL = QtWidgets.QAction(MainWindow)
         self.actionCheck_URL.setObjectName("actionCheck_URL")
         self.actionCheck_URL.triggered.connect(self.Check_URL)
@@ -310,8 +332,7 @@ class Ui_MainWindow(object):
         self.menufeatures.addAction(self.actionMath_Formulas)
         self.menufeatures.addAction(self.menuSecurity.menuAction())
         self.menufeatures.addAction(self.actionImg_toText)
-        self.menuhelp.addAction(self.actionGuide)
-        self.menuhelp.addAction(self.actionAbout_BOT)
+        self.menufeatures.addAction(self.actionAudio_Book)
         self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menufeatures.menuAction())
         self.menubar.addAction(self.menu_V.menuAction())
@@ -319,7 +340,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuCalender.menuAction())
         self.menubar.addAction(self.menuTime.menuAction())
         self.menubar.addAction(self.menuFeedback.menuAction())
-        self.menubar.addAction(self.menuhelp.menuAction())
+        self.menubar.addAction(self.menuAbout_BOT.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -331,14 +352,13 @@ class Ui_MainWindow(object):
         self.menu.setTitle(_translate("MainWindow", "..."))
         self.menufeatures.setTitle(_translate("MainWindow", "Features"))
         self.menuSecurity.setTitle(_translate("MainWindow", "Security"))
-        self.menuhelp.setTitle(_translate("MainWindow", "Help"))
         self.menuFeedback.setTitle(_translate("MainWindow", "Feedback"))
         self.menu_V.setTitle(_translate("MainWindow", "+V"))
         self.menu_V_2.setTitle(_translate("MainWindow", "-V"))
         self.menuCalender.setTitle(_translate("MainWindow", "Calender"))
         self.menuTime.setTitle(_translate("MainWindow", "Time"))
+        self.menuAbout_BOT.setTitle(_translate("MainWindow", "About BOT"))
         self.actionSetting.setText(_translate("MainWindow", "Setting"))
-        self.actionGuide.setText(_translate("MainWindow", "Guide"))
         self.actionAbout_Us.setText(_translate("MainWindow", "About us"))
         self.actionturn_up.setText(_translate("MainWindow", "Turn up"))
         self.actionturn_down.setText(_translate("MainWindow", "Turn down"))
@@ -348,11 +368,10 @@ class Ui_MainWindow(object):
         self.actiontranslate.setText(_translate("MainWindow", "Translate"))
         self.actionCalculator.setText(_translate("MainWindow", "Calculator"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
-        self.actionGuide.setText(_translate("MainWindow", "How to use"))
-        self.actionAbout_BOT.setText(_translate("MainWindow", "About BOT"))
         self.actionLearn_English.setText(_translate("MainWindow", "Learn English"))
         self.actionMath_Formulas.setText(_translate("MainWindow", "Math Formulas"))
         self.actionImg_toText.setText(_translate("MainWindow", "Image to Text"))
+        self.actionAudio_Book.setText(_translate("MainWindow", "Audio Book"))
         self.actionCheck_URL.setText(_translate("MainWindow", "Check URL"))
         self.actionCheck_Password.setText(_translate("MainWindow", "Check Password"))
     
