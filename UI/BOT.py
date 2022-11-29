@@ -472,7 +472,7 @@ class Ui_MainWindow(object):
         reg_ex = re.search('mở website (.+)', text)
         if reg_ex:
             domain = reg_ex.group(1)
-            url = 'https://www.' + domain + '.com'
+            url = 'https://www.' + domain
             webbrowser.open(url)
             self.speak("Trang web bạn yêu cầu đã được mở.")
         else:
@@ -488,7 +488,7 @@ class Ui_MainWindow(object):
             self.speak("Bot không định nghĩa được thuật ngữ của bạn. Xin mời bạn nói lại")   
         
     def open_google_and_search(self, text):
-        search_for = text.split("kiếm", 1)[1]
+        search_for = text.split("tìm", 1)[1]
         self.speak('AI đang tìm kiếm giúp bạn')
         chrome_options = Options()
         chrome_options.add_experimental_option("detach", True)
@@ -594,9 +594,6 @@ class Ui_MainWindow(object):
             else:
                 self.speak("Yêu cầu của bạn đã hoàn thành.")
             time.sleep(7)
-    def math(self, text):
-        url = 'https://www.coccoc.com/search?query=' + text
-        webbrowser.open(url) 
     def voice(self):
             you = ""
             ai_brain = ""
@@ -608,11 +605,11 @@ class Ui_MainWindow(object):
                 self.current_weather()
             elif "ngày mấy" in you or "mấy giờ" in you or "thứ mấy" in you:
                 self.get_time(you)
-            elif "mở ứng dụng" in you or "mở phần mềm" in you or "mở" in you:
+            elif "mở ứng dụng" in you or "mở phần mềm" in you or "mở" in you and "website" not in you:
                 self.open_application(you)
             elif "mở website" in you:
                 self.open_website(you)
-            elif "tìm kiếm" in you or "tìm" in you or "kiếm" in you or "search" in you:
+            elif "tìm" in you:
                 self.open_google_and_search(you)
             elif "nghe nhạc" in you or "xem phim" in you or "mở youtube" in you or "bài hát" in you:
                 self.youtube_search()
@@ -635,8 +632,10 @@ class Ui_MainWindow(object):
                 time.sleep(1)
                 exit()
             else:
-                ai_brain = "Tôi không nghe rõ gì cả !!!"
+                ai_brain = "Xin lỗi tôi không thể giúp được yêu cầu của bạn"
                 self.speak(ai_brain)
+                # notFound="<a href=\"http://www.google.com/search?q= " + you + "\">'Tìm kiếm " + you + "'</a>" 
+                # self.plainTextEdit.insertPlainText(notFound)
                 time.sleep(4)
             self.plainTextEdit.insertPlainText("______________________________\n")
             you = ""
@@ -652,11 +651,11 @@ class Ui_MainWindow(object):
             self.current_weather()
         elif "ngày mấy" in you or "mấy giờ" in you or "thứ mấy" in you:
             self.get_time(you)
-        elif "mở ứng dụng" in you or "mở phần mềm" in you or "mở" in you:
+        elif "mở ứng dụng" in you or "mở phần mềm" in you or "mở" in you and "website" not in you:
             self.open_application(you)
         elif "mở website" in you:
             self.open_website(you)
-        elif "tìm kiếm" in you or "tìm" in you or "kiếm" in you or "search" in you: 
+        elif "tìm" in you: 
             self.open_google_and_search(you)
         elif "nghe nhạc" in you or "xem phim" in you or "mở youtube" in you or "bài hát" in you:
             self.youtube_search()
@@ -667,8 +666,6 @@ class Ui_MainWindow(object):
             time.sleep(0.5)
             playsound.playsound("Ping.mp3", False)
             time.sleep(0.5)
-        elif "=" in you or "tính" in you:
-            self.math(you)
         elif "hẹn gặp lại" in you or "tạm biệt" in you or "cảm ơn" in you or "thoát" in you:
             ai_brain = "Rất vui khi giúp đỡ bạn. Hẹn gặp lại bạn sau."
             self.speak(ai_brain)
@@ -681,8 +678,10 @@ class Ui_MainWindow(object):
             time.sleep(1)
             exit()
         else:
-            ai_brain = "Tôi không nghe rõ gì cả !!!"
+            ai_brain = "Xin lỗi tôi không thể giúp được yêu cầu của bạn"
             self.speak(ai_brain)
+            # notFound="<a href=\"http://www.google.com/search?q= " + you + "\">'Tìm kiếm " + you + "'</a>" 
+            # self.plainTextEdit.append(notFound)
             time.sleep(4)
         self.plainTextEdit.insertPlainText("______________________________\n")
         you = ""
