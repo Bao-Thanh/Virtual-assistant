@@ -228,6 +228,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.plainTextEdit.setReadOnly(True)
         self.plainTextEdit.setGeometry(QtCore.QRect(0, 10, 561, 661))
         font = QtGui.QFont()
         font.setPointSize(20)
