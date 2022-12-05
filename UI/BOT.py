@@ -55,6 +55,9 @@ from keras.models import load_model
 import pandas as pd
 import cv2
 import imutils
+from bs4 import BeautifulSoup
+import requests
+import re 
         
 path = ChromeDriverManager().install()
 
@@ -217,6 +220,8 @@ class Ui_MainWindow(object):
             print(text)
             bot.say(text)
             bot.runAndWait()
+    def clearScreen(self):
+        self.plainTextEdit.clear()
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(563, 799)
@@ -265,12 +270,14 @@ class Ui_MainWindow(object):
         self.menu_V_2 = QtWidgets.QMenu(self.menubar)
         self.menu_V_2.setObjectName("menu_V_2")
         self.menu_V_2.aboutToShow.connect(self.turn_down)
-        self.menuCalender = QtWidgets.QMenu(self.menubar)
-        self.menuCalender.setObjectName("menuCalender")
-        self.menuCalender.aboutToShow.connect(self.calendar)
         self.menuTime = QtWidgets.QMenu(self.menubar)
-        self.menuTime.aboutToShow.connect(self.time)
         self.menuTime.setObjectName("menuTime")
+        self.actionNow = QtWidgets.QAction(MainWindow)
+        self.actionNow.setObjectName("actionNow")
+        self.actionNow.triggered.connect(self.time)
+        self.actionCalendar = QtWidgets.QAction(MainWindow)
+        self.actionCalendar.setObjectName("actionCalendar")
+        self.actionCalendar.triggered.connect(self.calendar)
         MainWindow.setMenuBar(self.menubar)
         self.actionSetting = QtWidgets.QAction(MainWindow)
         self.actionSetting.setObjectName("actionSetting")
@@ -297,6 +304,9 @@ class Ui_MainWindow(object):
         self.actionExit = QtWidgets.QAction(MainWindow)
         self.actionExit.setObjectName("actionExit")
         self.actionExit.triggered.connect(QCoreApplication.instance().quit)
+        self.menuClear = QtWidgets.QMenu(self.menubar)
+        self.menuClear.setObjectName("menuClear")
+        self.menuClear.aboutToShow.connect(self.clearScreen)
         self.menuAbout_BOT = QtWidgets.QMenu(self.menubar)
         self.menuAbout_BOT.setObjectName("menuAbout_BOT")
         self.menuAbout_BOT.aboutToShow.connect(self.about_bot)
@@ -334,13 +344,15 @@ class Ui_MainWindow(object):
         self.menufeatures.addAction(self.menuSecurity.menuAction())
         self.menufeatures.addAction(self.actionImg_toText)
         self.menufeatures.addAction(self.actionAudio_Book)
+        self.menuTime.addAction(self.actionNow)
+        self.menuTime.addAction(self.actionCalendar)
         self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menufeatures.menuAction())
         self.menubar.addAction(self.menu_V.menuAction())
         self.menubar.addAction(self.menu_V_2.menuAction())
-        self.menubar.addAction(self.menuCalender.menuAction())
         self.menubar.addAction(self.menuTime.menuAction())
         self.menubar.addAction(self.menuFeedback.menuAction())
+        self.menubar.addAction(self.menuClear.menuAction())
         self.menubar.addAction(self.menuAbout_BOT.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -356,8 +368,8 @@ class Ui_MainWindow(object):
         self.menuFeedback.setTitle(_translate("MainWindow", "Feedback"))
         self.menu_V.setTitle(_translate("MainWindow", "+V"))
         self.menu_V_2.setTitle(_translate("MainWindow", "-V"))
-        self.menuCalender.setTitle(_translate("MainWindow", "Calender"))
         self.menuTime.setTitle(_translate("MainWindow", "Time"))
+        self.menuClear.setTitle(_translate("MainWindow", "Clear Screen"))
         self.menuAbout_BOT.setTitle(_translate("MainWindow", "About BOT"))
         self.actionSetting.setText(_translate("MainWindow", "Setting"))
         self.actionAbout_Us.setText(_translate("MainWindow", "About us"))
@@ -375,7 +387,8 @@ class Ui_MainWindow(object):
         self.actionAudio_Book.setText(_translate("MainWindow", "Audio Book"))
         self.actionCheck_URL.setText(_translate("MainWindow", "Check URL"))
         self.actionCheck_Password.setText(_translate("MainWindow", "Check Password"))
-    
+        self.actionNow.setText(_translate("MainWindow", "Now"))
+        self.actionCalendar.setText(_translate("MainWindow", "Calendar"))
     def turn_up(self):
         devices = AudioUtilities.GetSpeakers()
         interface = devices.Activate(
@@ -572,7 +585,49 @@ class Ui_MainWindow(object):
                 self.speak("Không tìm thấy địa chỉ của bạn")
                 time.sleep(2)
                 self.current_weather()
+    def get_formula(self, t):
+        ope_list = ['cộng' , 'trừ', 'nhân', 'chia', 'mũ' , 'căn' , 'bình phương', 'giai thừa', 'chia lấy dư', 'ước chung lớn nhất', 'bội chung nhỏn nhất']
+        ope_list2 = ['+' , '-', '*', '%', '^' , 'căn' , ' bình phương', '!', '/', 'UCLN', 'BCNN']
+        cal_list = ['plus', 'minus', 'multiple', 'divide', 'pow', 'sqrt', 'square', 'factor', 'mod', 'gcd', 'lcm']
+        z = ''
+        for i in ope_list: 
+            if i in t:
+                z = cal_list[ope_list.index(i)]
+        for i in ope_list2: 
+            if i in t:
+                z = cal_list[ope_list2.index(i)]  
+        num = re.findall(r'\d*\.?\d+', t) 
 
+        if not num and z == '':
+            return False 
+        return num, z
+
+    def math(self, txt):
+            
+        cal = self.get_formula(txt)
+
+        if not cal:
+            self.plainTextEdit.insertPlainText("Không phải công thức toán hợp lệ'\n")
+        else:
+            if len(cal[0]) == 1:
+                x = cal[0][0]
+                y = '0'
+                z = cal[1]
+            else:
+                x = cal[0][0]
+                y = cal[0][1]
+                z = cal[1]
+
+            url = 'https://www.calculator.net/big-number-calculator.html?cx=' + x + '&cy='+ y + '&cp=20&co=' + z
+
+            r = requests.get(url)
+            
+            # # Parsing the HTML
+            soup = BeautifulSoup(r.content, 'html.parser')
+
+            s = soup.find('p', class_="bigtext")
+            print(s.text)
+            self.plainTextEdit.insertPlainText(s.text + "\n")
     def youtube_search(self):
         self.speak('Xin mời bạn chọn tên để tìm kiếm trên youtube')
         time.sleep(3.5)
@@ -616,6 +671,8 @@ class Ui_MainWindow(object):
                 self.youtube_search()
             elif "là gì" in you or "là ai" in you:
                 self.tell_me_about(you)
+            elif "tính" in you or "bằng" in you or "=" in you or re.findall(r'\d*\.?\d+', you):
+                self.math(you)
             elif "dừng lại" in you:
                 playsound.playsound("Ping.mp3", False)
                 time.sleep(0.5)
@@ -662,6 +719,8 @@ class Ui_MainWindow(object):
             self.youtube_search()
         elif "là gì" in you or "là ai" in you:
             self.tell_me_about(you)
+        elif "tính" in you or "bằng" in you or "=" in you or re.findall(r'\d*\.?\d+', you):
+            self.math(you)
         elif "dừng lại" in you:
             playsound.playsound("Ping.mp3", False)
             time.sleep(0.5)
