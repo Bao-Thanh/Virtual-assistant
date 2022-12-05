@@ -505,15 +505,8 @@ class Ui_MainWindow(object):
     def open_google_and_search(self, text):
         search_for = text.split("tìm", 1)[1]
         self.speak('AI đang tìm kiếm giúp bạn')
-        chrome_options = Options()
-        chrome_options.add_experimental_option("detach", True)
-        driver = webdriver.Chrome(path, chrome_options=chrome_options)
-        driver.maximize_window()
-        driver.get("https://www.google.com")
-        que = driver.find_element("xpath", "//input[@name='q']")
-        que.send_keys(str(search_for))
-        que.send_keys(Keys.RETURN)
-        time.sleep(6)
+        url = 'https://coccoc.com/search?query= ' + search_for
+        webbrowser.open(url)
         
     def weather(self, text):
         temp = "Trời quang mây tạnh"
