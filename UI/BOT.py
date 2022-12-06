@@ -83,19 +83,19 @@ class Ui_MainWindow(object):
         now = datetime.datetime.now()
         self.speak('Bây giờ là %d giờ %d phút %d giây ngày %d tháng %d năm %d' %
                 (now.hour, now.minute, now.second, now.day, now.month, now.year))
-        self.plainTextEdit.insertPlainText("______________________________\n")
+        self.textBrowser.append("_____________________________")
     def translate(self):      
         text = self.lineEdit.text()
         if text == "":
             self.speak('Hãy nhập nội dung cần dịch')
             self.lineEdit.setFocus()
-            self.plainTextEdit.insertPlainText("______________________________\n")
+            self.textBrowser.append("_____________________________")
         else:
             translator = Translator()
             translation = translator.translate(text)
-            self.plainTextEdit.insertPlainText("You: " + text + "\n")
+            self.textBrowser.append("You: " + text + "\n")
             self.speak(translation.text)
-            self.plainTextEdit.insertPlainText("______________________________\n")
+            self.textBrowser.append("_____________________________")
             self.lineEdit.clear()
     def calendar(self):
         apps.open_app('Calendar')
@@ -118,7 +118,7 @@ class Ui_MainWindow(object):
         if url == "":
             self.speak('Hãy nhập URL để kiểm tra')
             self.lineEdit.setFocus()
-            self.plainTextEdit.insertPlainText("______________________________\n")
+            self.textBrowser.append("_____________________________")
         else:
             a = UrlFeaturizer(url).run()
             test = []
@@ -131,21 +131,21 @@ class Ui_MainWindow(object):
             model = load_model("models/NN.h5")#
             test = pd.DataFrame(test).replace(True,1).replace(False,0).to_numpy().reshape(1,-1)
             predicted = np.argmax(model.predict(scaler.transform(test)),axis=1)
-            self.plainTextEdit.insertPlainText(url + " là trang web " + encoder.inverse_transform(predicted)[0] + "\n")
-            self.plainTextEdit.insertPlainText("______________________________\n")
+            self.textBrowser.append(url + " là trang web " + encoder.inverse_transform(predicted)[0] + "\n")
+            self.textBrowser.append("_____________________________")
     def check_pass(self):
         password = self.lineEdit.text()
         if password == "":
             self.speak('Hãy nhập password để kiểm tra')
             self.lineEdit.setFocus()
-            self.plainTextEdit.insertPlainText("______________________________\n")
+            self.textBrowser.append("_____________________________")
         else:
             model = pickle.load(open('models/RandomForestClassifier.pkl', 'rb'))
             tf = pickle.load(open('models/tdif.pkl', 'rb'))
             test = tf.transform([password]).toarray()
             output = model.predict(test)
-            self.plainTextEdit.insertPlainText(str('Password: ' + password + ' có độ bảo mật ' + output) + '\n')
-            self.plainTextEdit.insertPlainText("______________________________\n")
+            self.textBrowser.append('Password: ' + password + ' có độ bảo mật ' + output[0] + '\n')
+            self.textBrowser.append("_____________________________")
     def sort_contours(self, cnts, method="left-to-right"):
         reverse = False
         i = 0
@@ -197,8 +197,8 @@ class Ui_MainWindow(object):
         pixmap.save('Test\\test.png', "PNG")
         letter,image = self.get_letters("Test/test.png")
         word = self.get_word(letter)
-        self.plainTextEdit.insertPlainText(word + "\n")
-        self.plainTextEdit.insertPlainText("______________________________\n")
+        self.textBrowser.append(word + "\n")
+        self.textBrowser.append("_____________________________")
         print(word)
         plt.imshow(image)
     def audio_book(self):
@@ -221,19 +221,19 @@ class Ui_MainWindow(object):
             bot.say(text)
             bot.runAndWait()
     def clearScreen(self):
-        self.plainTextEdit.clear()
+        self.textBrowser.clear()
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(563, 799)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit.setReadOnly(True)
-        self.plainTextEdit.setGeometry(QtCore.QRect(0, 10, 561, 661))
+        self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
+        self.textBrowser.setReadOnly(True)
+        self.textBrowser.setGeometry(QtCore.QRect(0, 10, 561, 661))
         font = QtGui.QFont()
         font.setPointSize(20)
-        self.plainTextEdit.setFont(font)
-        self.plainTextEdit.setObjectName("plainTextEdit")
+        self.textBrowser.setFont(font)
+        self.textBrowser.setObjectName("textBrowser")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(460, 680, 101, 61))
         font = QtGui.QFont()
@@ -390,6 +390,12 @@ class Ui_MainWindow(object):
         self.actionCheck_Password.setText(_translate("MainWindow", "Check Password"))
         self.actionNow.setText(_translate("MainWindow", "Now"))
         self.actionCalendar.setText(_translate("MainWindow", "Calendar"))
+    def WriteText(self, url):
+        cf = QTextCharFormat(self.textBrowser.currentCharFormat())
+        cf.setAnchorHref(url)
+        self.textBrowser.mergeCurrentCharFormat(cf)
+        self.textBrowser.append(url)
+    
     def turn_up(self):
         devices = AudioUtilities.GetSpeakers()
         interface = devices.Activate(
@@ -408,7 +414,7 @@ class Ui_MainWindow(object):
     
     def speak(self, text):
         print("AI:  {}".format(text))
-        self.plainTextEdit.insertPlainText("AI: "+text+"\n")
+        self.textBrowser.append("AI: "+text)
         tts = gTTS(text=text, lang='vi', slow=False)
         tts.save("sound.mp3")
         playsound.playsound("sound.mp3", False)
@@ -545,7 +551,7 @@ class Ui_MainWindow(object):
         time.sleep(3)
         ow_url = "http://api.openweathermap.org/data/2.5/weather?"
         city = self.get_audio()
-        self.plainTextEdit.insertPlainText("You: "+city+"\n")
+        self.textBrowser.append("You: "+city)
         if city == "":
             self.current_weather()
         else:
@@ -592,7 +598,7 @@ class Ui_MainWindow(object):
                 z = cal_list[ope_list2.index(i)]  
         num = re.findall(r'\d*\.?\d+', t) 
 
-        if not num and z == '':
+        if not num or z == '':
             return False 
         return num, z
 
@@ -601,7 +607,7 @@ class Ui_MainWindow(object):
         cal = self.get_formula(txt)
 
         if not cal:
-            self.plainTextEdit.insertPlainText("Không phải công thức toán hợp lệ'\n")
+            self.textBrowser.append("Không phải công thức toán hợp lệ")
         else:
             if len(cal[0]) == 1:
                 x = cal[0][0]
@@ -620,13 +626,20 @@ class Ui_MainWindow(object):
             soup = BeautifulSoup(r.content, 'html.parser')
 
             s = soup.find('p', class_="bigtext")
-            print(s.text)
-            self.plainTextEdit.insertPlainText(s.text + "\n")
+            if not s:
+                self.textBrowser.append("Không phải công thức toán hợp lệ")
+            else:
+                print(s.text)
+                nguon = "<a href=\"https://www.calculator.net/big-number-calculator.html\">Calculator.net</a>"
+                self.textBrowser.moveCursor(QTextCursor.Start)
+                self.textBrowser.append(s.text)
+                self.textBrowser.append("Nguồn: " + nguon)
+                self.textBrowser.setOpenExternalLinks(True)
     def youtube_search(self):
         self.speak('Xin mời bạn chọn tên để tìm kiếm trên youtube')
         time.sleep(3.5)
         text = self.get_audio()
-        self.plainTextEdit.insertPlainText("You: "+text+"\n")
+        self.textBrowser.append("You: "+text)
         if text == "":
             self.speak("Lỗi tìm kiếm. Do bạn chưa nói tên tìm kiếm.")
             time.sleep(4)
@@ -648,7 +661,7 @@ class Ui_MainWindow(object):
             you = ""
             ai_brain = ""
             you = self.get_audio()
-            self.plainTextEdit.insertPlainText("You: "+you+"\n")
+            self.textBrowser.append("You: "+you)
             if "xin chào" in you or "hello" in you:
                 self.hello()
             elif "thời tiết" in you:
@@ -684,19 +697,21 @@ class Ui_MainWindow(object):
                 time.sleep(1)
                 exit()
             else:
-                ai_brain = "Xin lỗi BOT không thể giúp được yêu cầu của bạn"
-                self.speak(ai_brain)
-                # notFound="<a href=\"http://www.google.com/search?q= " + you + "\">'Tìm kiếm " + you + "'</a>" 
-                # self.plainTextEdit.insertPlainText(notFound)
+                ai_brain = "Xin lỗi mình không thể giúp được yêu cầu của bạn"
+                self.textBrowser.append(ai_brain)
+                notFound = "<a href=\"https://coccoc.com/search?query={0}\">Tìm kiếm {0}</a>".format(you)
+                self.textBrowser.moveCursor(QTextCursor.Start)
+                self.textBrowser.append(notFound)
+                self.textBrowser.setOpenExternalLinks(True)
                 time.sleep(4)
-            self.plainTextEdit.insertPlainText("______________________________\n")
+            self.textBrowser.append("_____________________________")
             you = ""
     def textEdit(self):
         you = ""
         ai_brain = ""
         you = self.lineEdit.text()
         self.lineEdit.clear()   
-        self.plainTextEdit.insertPlainText("You: "+you+"\n")
+        self.textBrowser.append("You: "+you)
         if "xin chào" in you or "hello" in you:
             self.hello()
         elif "thời tiết" in you:
@@ -732,15 +747,15 @@ class Ui_MainWindow(object):
             time.sleep(1)
             exit()
         else:
-            ai_brain = "Xin lỗi BOT không thể giúp được yêu cầu của bạn"
-            self.speak(ai_brain)
-            # notFound="<a href=\"http://www.google.com/search?q= " + you + "\">'Tìm kiếm " + you + "'</a>" 
-            # self.plainTextEdit.append(notFound)
+            ai_brain = "Xin lỗi mình không thể giúp được yêu cầu của bạn"
+            self.textBrowser.append(ai_brain)
+            notFound = "<a href=\"https://coccoc.com/search?query={0}\">Tìm kiếm {0}</a>".format(you)
+            self.textBrowser.moveCursor(QTextCursor.Start)
+            self.textBrowser.append(notFound)
+            self.textBrowser.setOpenExternalLinks(True)
             time.sleep(4)
-        self.plainTextEdit.insertPlainText("______________________________\n")
+        self.textBrowser.append("_____________________________")
         you = ""
- 
-        
             
 if __name__ == "__main__":
     import sys
