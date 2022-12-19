@@ -119,18 +119,18 @@ model.add(Dense(35, activation='softmax'))
 
 # %%
 model.summary()
-
+ 
 # %%
 model.compile(loss='categorical_crossentropy', optimizer="adam",metrics=['accuracy'])
 
 # %%
-history = model.fit(train_X,train_Y, epochs=50, batch_size=32, verbose=1)
+history = model.fit(train_X,train_Y, epochs=50, batch_size=32, validation_data = (val_X, val_Y),  verbose=1)
 
 # %%
 import pickle
-model.save("../Models/Sequential.h5")
-np.save('../Models/Sequential_lblenc.npy', LB.classes_)
-pickle.dump(LB, open('../Models/lb.pkl', 'wb'))
+model.save("../Models/Sequential_2.h5")
+np.save('../Models/Sequential_lblenc_2.npy', LB.classes_)
+pickle.dump(LB, open('../Models/lb_2.pkl', 'wb'))
 #%%
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
