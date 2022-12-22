@@ -93,7 +93,7 @@ class Ui_MainWindow(object):
         else:
             translator = Translator()
             translation = translator.translate(text)
-            self.textBrowser.append("You: " + text + "\n")
+            self.textBrowser.append("You: " + text)
             self.speak(translation.text)
             self.textBrowser.append("_____________________________")
             self.lineEdit.clear()
@@ -131,7 +131,7 @@ class Ui_MainWindow(object):
             model = load_model("models/NN.h5")#
             test = pd.DataFrame(test).replace(True,1).replace(False,0).to_numpy().reshape(1,-1)
             predicted = np.argmax(model.predict(scaler.transform(test)),axis=1)
-            self.textBrowser.append(url + " là trang web " + encoder.inverse_transform(predicted)[0] + "\n")
+            self.textBrowser.append(url + " là trang web " + encoder.inverse_transform(predicted)[0])
             self.textBrowser.append("_____________________________")
     def check_pass(self):
         password = self.lineEdit.text()
@@ -144,7 +144,7 @@ class Ui_MainWindow(object):
             tf = pickle.load(open('models/tdif.pkl', 'rb'))
             test = tf.transform([password]).toarray()
             output = model.predict(test)
-            self.textBrowser.append('Password: ' + password + ' có độ bảo mật ' + output[0] + '\n')
+            self.textBrowser.append('Password: ' + password + ' có độ bảo mật ' + output[0])
             self.textBrowser.append("_____________________________")
     def sort_contours(self, cnts, method="left-to-right"):
         reverse = False
@@ -197,7 +197,7 @@ class Ui_MainWindow(object):
         pixmap.save('Test\\test.png', "PNG")
         letter,image = self.get_letters("Test/test.png")
         word = self.get_word(letter)
-        self.textBrowser.append(word + "\n")
+        self.textBrowser.append(word)
         self.textBrowser.append("_____________________________")
         print(word)
         plt.imshow(image)
@@ -225,6 +225,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(563, 799)
+        MainWindow.setWindowFlags(QtCore.Qt.MSWindowsFixedSizeDialogHint)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
